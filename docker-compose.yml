@@ -1,0 +1,111 @@
+---
+version: "3"
+services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: hm-heimdall    
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - ./configs-data/heimdall:/config
+    ports:
+      - 1000:80
+      - 1001:443
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: hm-prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - ./configs-data/prowlarr:/config
+    ports:
+      - 1002:9696
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: hm-sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - ./configs-data/sonarr:/config
+      - ./shows-data:/tv #optional
+      - ./shared-downloads-data:/downloads #optional
+    ports:
+      - 1003:8989
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: hm-radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - ./configs-data/radarr:/config
+      - ./movies-data:/movies
+      - ./shared-downloads-data:/downloads
+    ports:
+      - 1004:7878
+    restart: unless-stopped
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: hm-plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+      # - PLEX_CLAIM= #optional
+    volumes:
+      - ./configs-data/plex:/config
+      - ./shows-data:/tv
+      - ./movies-data:/movies
+    ports:
+      - 1005:32400
+    restart: unless-stopped
+
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: hm-transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kuala_Lumpur
+      # - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+      # - USER=username #optional
+      # - PASS=password #optional
+      # - WHITELIST=iplist #optional
+      # - PEERPORT=peerport #optional
+      # - HOST_WHITELIST=dnsname list #optional
+    volumes:
+      - ./configs-data/transmission:/config
+      - ./shared-downloads-data:/downloads
+      # - /path/to/watch/folder:/watch
+    ports:
+      - 1006:9091
+      # - 51413:51413
+      # - 51413:51413/udp
+    restart: unless-stopped
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: hm-overseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - ./configs-data/overseer:/config
+    ports:
+      - 1007:5055
+    restart: unless-stopped
